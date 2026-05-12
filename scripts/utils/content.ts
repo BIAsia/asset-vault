@@ -16,6 +16,10 @@ export interface ExistingTool {
   content: string;
 }
 
+function idFromFilePath(filePath: string) {
+  return path.basename(filePath).replace(/\.(md|mdx)$/i, "");
+}
+
 export async function readExistingTools(): Promise<ExistingTool[]> {
   const files = await fg("src/content/tools/**/*.{md,mdx}", { cwd: repoRoot, absolute: true });
   return files.map((filePath) => {
@@ -106,7 +110,8 @@ ${END}`;
 function uniqueId(base: string, existing: ExistingTool[], url: string) {
   const sameUrl = existing.find((tool) => tool.data.url === url);
   if (sameUrl && typeof sameUrl.data.id === "string") return sameUrl.data.id;
-  const ids = new Set(existing.map((tool) => tool.data.id).filter(Boolean));
+  if (sameUrl) return idFromFilePath(sameUrl.filePath);
+  const ids = new Set(existing.map((tool) => typeof tool.data.id === "string" ? tool.data.id : idFromFilePath(tool.filePath)));
   if (!ids.has(base)) return base;
   return `${base}-${shortHash(url)}`;
 }
@@ -120,7 +125,11 @@ export async function materializeTool(card: AiToolCard, assets: { previewImage: 
   mkdirSync(contentToolsDir, { recursive: true });
   const existingTools = await readExistingTools();
   const existing = findToolForCardUrl(existingTools, card.url);
-  const id = typeof existing?.data.id === "string" ? existing.data.id : uniqueId(slugFromUrl(card.url, card.title), existingTools, card.url);
+  const id = typeof existing?.data.id === "string"
+    ? existing.data.id
+    : existing
+      ? idFromFilePath(existing.filePath)
+      : uniqueId(slugFromUrl(card.url, card.title), existingTools, card.url);
   const now = new Date().toISOString();
   const created = typeof existing?.data.created === "string" ? existing.data.created : now;
   const existingLinks = Array.isArray(existing?.data.links) ? existing.data.links : [];
@@ -159,14 +168,16 @@ export async function materializeTool(card: AiToolCard, assets: { previewImage: 
 
   const filePath = existing?.filePath ?? path.join(contentToolsDir, `${id}.md`);
   const body = `${generatedBody(tool)}${preserveManualContent(existing)}`;
-  const file = matter.stringify(body, tool);
+  const { id: _id, ...frontmatter } = tool;
+  const file = matter.stringify(body, frontmatter);
   writeFileSync(filePath, file);
   return { filePath, tool };
 }
 
 export function parseToolFile(filePath: string) {
   const parsed = matter(readFileSync(filePath, "utf8"));
-  return MaterializedToolSchema.parse(parsed.data);
+  const id = typeof parsed.data.id === "string" ? parsed.data.id : idFromFilePath(filePath);
+  return MaterializedToolSchema.parse({ id, ...parsed.data });
 }
 
 export function assetExists(sitePath: string) {

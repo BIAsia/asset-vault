@@ -1,100 +1,14 @@
 ---
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import ToolCard from "../components/ToolCard.astro";
+import VaultHome from "../components/VaultHome";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { createVaultIndex } from "../lib/vault";
 
-const tools = (await getCollection("tools") as CollectionEntry<"tools">[]).sort(
-  (a: CollectionEntry<"tools">, b: CollectionEntry<"tools">) => b.data.updated.getTime() - a.data.updated.getTime()
-);
-const tags = [...new Set(tools.flatMap((tool: CollectionEntry<"tools">) => tool.data.tags as string[]))]
-  .sort((a: string, b: string) => a.localeCompare(b));
+const tools = (await getCollection("tools")) as CollectionEntry<"tools">[];
+const vault = createVaultIndex(tools);
 ---
 
 <BaseLayout title="Asset Vault" description="Search saved creative tools, demos, references, and libraries.">
-  <main class="shell" data-pagefind-ignore>
-    <header class="site-header">
-      <div>
-        <p class="eyebrow">Agent maintained library</p>
-        <h1>Asset Vault</h1>
-      </div>
-      <a class="header-link" href="https://vercel.com/docs/deployments/git" target="_blank" rel="noreferrer">Git-backed</a>
-    </header>
-
-    <section class="search-band" aria-label="Search tools">
-      <div class="search-band__main">
-        <label for="local-search">Search</label>
-        <input id="local-search" type="search" placeholder="线条, shader, vector, typography..." autocomplete="off" />
-      </div>
-      <div class="search-band__meta">
-        <span id="result-count">{tools.length}</span>
-        <span>items</span>
-      </div>
-    </section>
-
-    {tags.length > 0 && (
-      <nav class="tag-filter" aria-label="Filter by tag">
-        <button class="tag-filter__item is-active" type="button" data-tag="">All</button>
-        {tags.map((tag) => <button class="tag-filter__item" type="button" data-tag={tag}>{tag}</button>)}
-      </nav>
-    )}
-
-    {tools.length > 0 ? (
-      <section class="tool-grid" id="tool-grid" aria-live="polite">
-        {tools.map((tool) => <ToolCard tool={tool} />)}
-      </section>
-    ) : (
-      <section class="empty-state">
-        <h2>No saved tools yet</h2>
-        <p>Run <code>pnpm vault:add https://wcandillon.github.io/redraw/</code> and the background worker will build the first card.</p>
-      </section>
-    )}
-  </main>
-
-  <section class="pagefind-panel" data-pagefind-ignore>
-    <div class="shell">
-      <h2>Deep page search</h2>
-      <p>After production build, Pagefind indexes detail pages for full text search.</p>
-      <div id="pagefind-search"></div>
-    </div>
-  </section>
-
-  <script>
-    const searchInput = document.querySelector("#local-search");
-    const cards = Array.from(document.querySelectorAll(".tool-card"));
-    const resultCount = document.querySelector("#result-count");
-    const filterButtons = Array.from(document.querySelectorAll("[data-tag]"));
-    let activeTag = "";
-
-    function applyFilters() {
-      const query = ((searchInput instanceof HTMLInputElement ? searchInput.value : "") || "").trim().toLowerCase();
-      let visible = 0;
-      for (const card of cards) {
-        const search = card.getAttribute("data-search") || "";
-        const tags = card.getAttribute("data-tags") || "";
-        const matchesQuery = !query || search.includes(query);
-        const matchesTag = !activeTag || tags.split(" ").includes(activeTag);
-        const show = matchesQuery && matchesTag;
-        card.toggleAttribute("hidden", !show);
-        if (show) visible += 1;
-      }
-      if (resultCount) resultCount.textContent = String(visible);
-    }
-
-    searchInput?.addEventListener("input", applyFilters);
-    for (const button of filterButtons) {
-      button.addEventListener("click", () => {
-        activeTag = button.getAttribute("data-tag") || "";
-        for (const item of filterButtons) item.classList.toggle("is-active", item === button);
-        applyFilters();
-      });
-    }
-
-    if (document.querySelector("#pagefind-search")) {
-      const pagefindPath = "/pagefind/pagefind-ui.js";
-      import(/* @vite-ignore */ pagefindPath).then(({ PagefindUI }) => {
-        new PagefindUI({ element: "#pagefind-search", showSubResults: true });
-      }).catch(() => {});
-    }
-  </script>
+  <VaultHome vault={vault} client:load />
 </BaseLayout>

@@ -36,7 +36,6 @@ whyInteresting: >-
   grill-me — mattpocock/skills was collected because it appears relevant to
   stroke, typography workflows.
 schemaVersion: 1
-id: grill-me-mattpocock-skills
 links:
   - label: skills.sh
     url: 'https://skills.sh/mattpocock/skills/grill-me?open_in_browser=true'

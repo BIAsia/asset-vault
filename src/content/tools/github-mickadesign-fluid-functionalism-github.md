@@ -41,7 +41,6 @@ whyInteresting: >-
   Fluid Functionalism was collected because it appears relevant to animation
   workflows.
 schemaVersion: 1
-id: github-mickadesign-fluid-functionalism-github
 links:
   - label: fluidfunctionalism.com
     url: 'https://www.fluidfunctionalism.com/'

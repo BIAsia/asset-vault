@@ -30,7 +30,6 @@ whyInteresting: >-
   tdd — mattpocock/skills was collected because it appears relevant to vector,
   stroke, library workflows.
 schemaVersion: 1
-id: tdd-mattpocock-skills
 links:
   - label: skills.sh
     url: 'https://skills.sh/mattpocock/skills/tdd?open_in_browser=true'
