@@ -1,21 +1,24 @@
 ---
-schemaVersion: 1
-id: redraw
 title: Redraw
-url: https://wcandillon.github.io/redraw/
+url: 'https://wcandillon.github.io/redraw/'
 contentType: tool
-summary: 一个用 TypeScript 函数控制 GPU 矢量路径渲染的实验性工具，适合研究线条、描边、路径着色和 2D 材质效果。
+summary: You are renderful
 features:
   - Variable strokes
   - Color along path
   - Vector feathering
   - Physically based rendering for 2D paths
+  - Captured page metadata
+  - Searchable aliases
+  - Visual preview
 tags:
   - graphics
   - vector
   - stroke
   - shader
   - gpu
+  - rendering
+  - library
 aliases:
   - 线条
   - 描边
@@ -25,18 +28,38 @@ aliases:
   - variable strokes
   - path rendering
   - vector feathering
+  - 图形
+  - 图形学
+  - visual
+  - vector graphics
+  - 笔触
+  - 着色器
+  - 特效
+  - 渲染
+  - 图形渲染
+  - 库
+  - 框架
 useCases:
   - 动态线条参考
   - 文本描边和路径效果
   - shader 风格视觉实验
-whyInteresting: Redraw 把矢量路径、GPU 渲染和可编程描边放在一起，适合作为 creative coding 和图形工具调研样本。
-previewImage: /assets/tools/redraw/preview.svg
-created: 2026-05-12T00:00:00.000Z
-updated: 2026-05-12T00:00:00.000Z
+  - 动态线条
+  - 路径着色
+  - 文本描边参考
+whyInteresting: >-
+  Redraw was collected because it appears relevant to graphics, vector, stroke,
+  shader, rendering, library workflows.
+schemaVersion: 1
+id: redraw
+links:
+  - label: wcandillon.github.io
+    url: 'https://wcandillon.github.io/redraw/'
+previewImage: /assets/tools/wcandillon-github-io-redraw/preview.png
+created: '2026-05-12T09:46:38.827Z'
+updated: '2026-05-12T09:46:38.827Z'
 ---
-
 <!-- generated:start -->
-一个用 TypeScript 函数控制 GPU 矢量路径渲染的实验性工具，适合研究线条、描边、路径着色和 2D 材质效果。
+You are renderful
 
 ## Features
 
@@ -44,21 +67,25 @@ updated: 2026-05-12T00:00:00.000Z
 - Color along path
 - Vector feathering
 - Physically based rendering for 2D paths
+- Captured page metadata
+- Searchable aliases
+- Visual preview
 
 ## Use Cases
 
 - 动态线条参考
 - 文本描边和路径效果
 - shader 风格视觉实验
+- 动态线条
+- 路径着色
+- 文本描边参考
 
 ## Why It Matters
 
-Redraw 把矢量路径、GPU 渲染和可编程描边放在一起，适合作为 creative coding 和图形工具调研样本。
+Redraw was collected because it appears relevant to graphics, vector, stroke, shader, rendering, library workflows.
 
 ## Source
 
-[Open original](https://wcandillon.github.io/redraw/)
+- [wcandillon.github.io](https://wcandillon.github.io/redraw/)
 <!-- generated:end -->
-
 ## My Notes
-
