@@ -1,10 +1,8 @@
 ---
-title: GitHub - mickadesign/fluid-functionalism · GitHub
-url: 'https://github.com/mickadesign/fluid-functionalism'
+title: Fluid Functionalism
+url: 'https://www.fluidfunctionalism.com/'
 contentType: tool
-summary: >-
-  Contribute to mickadesign/fluid-functionalism development by creating an
-  account on GitHub.
+summary: Shadcn components used in service of functional clarity.
 features:
   - Captured page metadata
   - Searchable aliases
@@ -36,17 +34,25 @@ useCases:
   - 动态线条
   - 路径着色
   - 文本描边参考
+  - 工具调研
+  - 视觉参考
+  - 项目灵感沉淀
 whyInteresting: >-
-  GitHub - mickadesign/fluid-functionalism · GitHub was collected because it
-  appears relevant to graphics, vector, stroke, typography, animation workflows.
+  Fluid Functionalism was collected because it appears relevant to animation
+  workflows.
 schemaVersion: 1
 id: github-mickadesign-fluid-functionalism-github
-previewImage: /assets/tools/github-com/preview.svg
+links:
+  - label: github.com
+    url: 'https://github.com/mickadesign/fluid-functionalism'
+  - label: fluidfunctionalism.com
+    url: 'https://www.fluidfunctionalism.com/'
+previewImage: /assets/tools/fluidfunctionalism-com/preview.svg
 created: '2026-05-12T08:58:55.042Z'
-updated: '2026-05-12T08:58:55.042Z'
+updated: '2026-05-12T09:05:13.470Z'
 ---
 <!-- generated:start -->
-Contribute to mickadesign/fluid-functionalism development by creating an account on GitHub.
+Shadcn components used in service of functional clarity.
 
 ## Features
 
@@ -59,14 +65,17 @@ Contribute to mickadesign/fluid-functionalism development by creating an account
 - 动态线条
 - 路径着色
 - 文本描边参考
+- 工具调研
+- 视觉参考
+- 项目灵感沉淀
 
 ## Why It Matters
 
-GitHub - mickadesign/fluid-functionalism · GitHub was collected because it appears relevant to graphics, vector, stroke, typography, animation workflows.
+Fluid Functionalism was collected because it appears relevant to animation workflows.
 
 ## Source
 
-[Open original](https://github.com/mickadesign/fluid-functionalism)
+- [github.com](https://github.com/mickadesign/fluid-functionalism)
+- [fluidfunctionalism.com](https://www.fluidfunctionalism.com/)
 <!-- generated:end -->
 ## My Notes
-
