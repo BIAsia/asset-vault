@@ -15,5 +15,12 @@ This repo is an agent-maintained public asset library.
 ## Daily Flow
 
 1. User sends a URL.
-2. Run `pnpm vault:add <url>`.
+2. Run `COREPACK_HOME=/Users/devonly/Documents/Feishu/asset-vault/.corepack pnpm vault:add <url>`.
 3. Return once the URL is queued; the worker handles processing, commit, push, and Vercel deployment.
+
+## Runtime Notes
+
+- Use the repo-local Corepack cache above. Plain `pnpm` may try to write under `/Users/devonly/.cache/node/corepack` and fail in sandboxed agent sessions.
+- If collection fails with a likely network error such as `fetch failed`, rerun the same `vault:add` command with the required network approval rather than editing generated files by hand.
+- If a user asks whether processing finished or pushed, check `inbox/processed.jsonl`, `inbox/failed.jsonl`, `git status --short --branch`, and `git log --oneline -3 --decorate`.
+- `main...origin/main` with no status lines means the local branch is clean and synchronized with the remote.
