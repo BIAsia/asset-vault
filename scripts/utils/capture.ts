@@ -31,25 +31,43 @@ function extractFromHtml(html: string, url: string) {
       document.querySelector('meta[property="og:description"]')?.getAttribute("content") ??
       ""
   );
-  const ogImage = document.querySelector('meta[property="og:image"]')?.getAttribute("content") ?? undefined;
+  const ogImage =
+    document.querySelector('meta[property="og:image"]')?.getAttribute("content") ??
+    document.querySelector('meta[name="twitter:image"]')?.getAttribute("content") ??
+    document.querySelector('link[rel="image_src"]')?.getAttribute("href") ??
+    undefined;
   const favicon =
     document.querySelector('link[rel="icon"]')?.getAttribute("href") ??
     document.querySelector('link[rel="shortcut icon"]')?.getAttribute("href") ??
     undefined;
   const article = new Readability(document.cloneNode(true) as Document).parse();
   const text = cleanText(article?.textContent || document.body?.textContent || "");
-  return { title, description, text, ogImage, favicon };
+  return {
+    title,
+    description,
+    text,
+    ogImage: ogImage ? new URL(ogImage, url).toString() : undefined,
+    favicon: favicon ? new URL(favicon, url).toString() : undefined
+  };
 }
 
-function placeholderSvg(title: string, url: string) {
-  const safeTitle = title.replace(/[<>&"]/g, (char) => ({ "<": "&lt;", ">": "&gt;", "&": "&amp;", '"': "&quot;" })[char] ?? char);
-  const host = new URL(url).hostname.replace(/^www\./, "");
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
-  <rect width="1280" height="800" fill="#f3efe2"/>
-  <path d="M80 620 C 290 470, 400 680, 610 520 S 990 300, 1200 430" fill="none" stroke="#167c65" stroke-width="18" stroke-linecap="round"/>
-  <text x="80" y="160" font-family="Georgia, serif" font-size="86" fill="#1f2533">${safeTitle || "Captured Asset"}</text>
-  <text x="84" y="230" font-family="Arial, sans-serif" font-size="32" fill="#626a75">${host}</text>
-</svg>`;
+function imageExtension(contentType: string) {
+  if (contentType.includes("image/png")) return "png";
+  if (contentType.includes("image/webp")) return "webp";
+  if (contentType.includes("image/gif")) return "gif";
+  if (contentType.includes("image/svg+xml")) return "svg";
+  return "jpg";
+}
+
+async function downloadMetadataImage(imageUrl: string, assetDir: string) {
+  const response = await fetch(imageUrl);
+  if (!response.ok) throw new Error(`metadata image request failed: ${response.status}`);
+  const contentType = response.headers.get("content-type") ?? "";
+  if (!contentType.startsWith("image/")) throw new Error(`metadata image is not an image: ${contentType || "unknown content-type"}`);
+  const previewPath = path.join(assetDir, `preview.${imageExtension(contentType)}`);
+  const bytes = Buffer.from(await response.arrayBuffer());
+  writeFileSync(previewPath, bytes);
+  return siteAssetPath(previewPath);
 }
 
 export async function captureUrl(url: string, id: string): Promise<CapturedPage> {
@@ -61,6 +79,7 @@ export async function captureUrl(url: string, id: string): Promise<CapturedPage>
   const videoDir = path.join(cacheDir, "videos", id);
 
   try {
+    process.env.PLAYWRIGHT_BROWSERS_PATH ??= path.join(cacheDir, "ms-playwright");
     const { chromium } = await import("playwright");
     const context = await chromium.launchPersistentContext(profileDir, {
       headless: true,
@@ -82,7 +101,11 @@ export async function captureUrl(url: string, id: string): Promise<CapturedPage>
         document.querySelector('meta[name="description"]')?.getAttribute("content") ||
         document.querySelector('meta[property="og:description"]')?.getAttribute("content") ||
         "",
-      ogImage: document.querySelector('meta[property="og:image"]')?.getAttribute("content") || "",
+      ogImage:
+        document.querySelector('meta[property="og:image"]')?.getAttribute("content") ||
+        document.querySelector('meta[name="twitter:image"]')?.getAttribute("content") ||
+        document.querySelector('link[rel="image_src"]')?.getAttribute("href") ||
+        "",
       favicon:
         document.querySelector('link[rel="icon"]')?.getAttribute("href") ||
         document.querySelector('link[rel="shortcut icon"]')?.getAttribute("href") ||
@@ -116,16 +139,19 @@ export async function captureUrl(url: string, id: string): Promise<CapturedPage>
       html,
       previewImage: siteAssetPath(previewPath),
       previewVideo,
-      ogImage: meta.ogImage || extracted.ogImage,
-      favicon: meta.favicon || extracted.favicon
+      ogImage: meta.ogImage ? new URL(meta.ogImage, finalUrl).toString() : extracted.ogImage,
+      favicon: meta.favicon ? new URL(meta.favicon, finalUrl).toString() : extracted.favicon
     };
   } catch (error) {
+    console.warn(`[vault] screenshot capture failed, trying metadata image fallback: ${(error as Error).message}`);
     const response = await fetch(url);
     const html = await response.text();
     const extracted = extractFromHtml(html, response.url || url);
     writeFileSync(rawHtmlPath, html);
-    const previewPath = path.join(assetDir, "preview.svg");
-    writeFileSync(previewPath, placeholderSvg(extracted.title, url));
+    if (!extracted.ogImage) {
+      throw new Error(`Unable to capture a real preview image for ${url}; screenshot failed and no metadata image was found`);
+    }
+    const previewImage = await downloadMetadataImage(extracted.ogImage, assetDir);
     return {
       requestedUrl: url,
       finalUrl: response.url || url,
@@ -133,7 +159,7 @@ export async function captureUrl(url: string, id: string): Promise<CapturedPage>
       description: extracted.description,
       text: extracted.text,
       html,
-      previewImage: siteAssetPath(previewPath),
+      previewImage,
       ogImage: extracted.ogImage,
       favicon: extracted.favicon
     };

@@ -26,7 +26,7 @@ export function slugify(value: string) {
 export function slugFromUrl(url: string, title?: string) {
   const parsed = new URL(url);
   const host = parsed.hostname.replace(/^www\./, "");
-  const pathPart = parsed.pathname.split("/").filter(Boolean).slice(0, 2).join("-");
+  const pathPart = parsed.pathname.split("/").filter(Boolean).slice(0, 6).join("-");
   const titlePart = title ? slugify(title) : "";
   const base = slugify(titlePart || [host, pathPart].filter(Boolean).join("-"));
   return base || `asset-${shortHash(url)}`;

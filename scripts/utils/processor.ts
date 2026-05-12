@@ -7,6 +7,7 @@ import { loadTaxonomy } from "./taxonomy";
 import { processedPath, failedPath } from "./paths";
 import { readQueue, removeQueueItem } from "./queue";
 import { maybeCommitAndPush } from "./git";
+import { slugFromUrl } from "./url";
 
 function pnpmRun(args: string[]) {
   return new Promise<void>((resolve, reject) => {
@@ -25,7 +26,7 @@ export async function processNext() {
 
   try {
     const taxonomy = loadTaxonomy();
-    const provisionalId = new URL(item.url).hostname.replace(/^www\./, "").replace(/[^a-z0-9]+/gi, "-").toLowerCase();
+    const provisionalId = slugFromUrl(item.url);
     const captured = await captureUrl(item.url, provisionalId);
     const card = await generateToolCard(captured, taxonomy);
     const result = await materializeTool(card, {

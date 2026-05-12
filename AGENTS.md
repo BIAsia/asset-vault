@@ -11,6 +11,7 @@ This repo is an agent-maintained public asset library.
 - Do not edit generated content files by hand unless repairing validation errors.
 - Never overwrite user notes outside `<!-- generated:start -->` and `<!-- generated:end -->`.
 - Run `pnpm vault:validate` before committing generated content.
+- Preview images must be real source-derived assets: a headless Playwright screenshot of the URL, or a downloaded image from page metadata such as `og:image`/`twitter:image`. Do not generate placeholder, decorative, or fake preview images.
 
 ## Daily Flow
 
@@ -21,6 +22,8 @@ This repo is an agent-maintained public asset library.
 ## Runtime Notes
 
 - Use the repo-local Corepack cache above. Plain `pnpm` may try to write under `/Users/devonly/.cache/node/corepack` and fail in sandboxed agent sessions.
+- Use repo-local Playwright browsers under `.cache/ms-playwright`. If the browser executable is missing, run `PLAYWRIGHT_BROWSERS_PATH=/Users/devonly/Documents/Feishu/asset-vault/.cache/ms-playwright pnpm exec playwright install chromium` with network approval.
+- If headless screenshot capture fails, use page metadata to fetch a real preview image. If neither a screenshot nor metadata image can be captured, fail the collection instead of creating a fake asset.
 - If collection still fails with a likely network error such as `fetch failed`, rerun the same `vault:add` command with network approval rather than editing generated files by hand.
 - If a user asks whether processing finished or pushed, check `inbox/processed.jsonl`, `inbox/failed.jsonl`, `git status --short --branch`, and `git log --oneline -3 --decorate`.
 - `main...origin/main` with no status lines means the local branch is clean and synchronized with the remote.
