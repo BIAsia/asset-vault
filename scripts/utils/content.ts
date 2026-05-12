@@ -79,7 +79,7 @@ export async function materializeTool(card: AiToolCard, assets: { previewImage: 
   const id = uniqueId(slugFromUrl(card.url, card.title), existingTools, card.url);
   const now = new Date().toISOString();
   const created = typeof existing?.data.created === "string" ? existing.data.created : now;
-  const tool: MaterializedTool = MaterializedToolSchema.parse({
+  const rawTool = {
     schemaVersion: 1,
     id,
     title: card.title,
@@ -92,10 +92,12 @@ export async function materializeTool(card: AiToolCard, assets: { previewImage: 
     useCases: card.useCases,
     whyInteresting: card.whyInteresting,
     previewImage: assets.previewImage,
-    previewVideo: assets.previewVideo,
     created,
     updated: now
-  });
+  };
+  const tool: MaterializedTool = MaterializedToolSchema.parse(
+    assets.previewVideo ? { ...rawTool, previewVideo: assets.previewVideo } : rawTool
+  );
 
   const filePath = existing?.filePath ?? path.join(contentToolsDir, `${id}.md`);
   const body = `${generatedBody(card)}${preserveManualContent(existing)}`;
