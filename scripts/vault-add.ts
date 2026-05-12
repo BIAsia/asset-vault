@@ -11,9 +11,10 @@ ensureProjectDirs();
 const rawUrl = process.argv.find((arg) => !arg.startsWith("--") && arg !== process.argv[0] && arg !== process.argv[1]);
 const force = process.argv.includes("--force");
 const noStart = process.argv.includes("--no-start");
+const background = process.argv.includes("--background");
 
 if (!rawUrl) {
-  console.error("Usage: pnpm vault:add <url> [--force] [--no-start]");
+  console.error("Usage: pnpm vault:add <url> [--force] [--no-start] [--background]");
   process.exit(1);
 }
 
@@ -24,19 +25,19 @@ if (existing && !force) {
   process.exit(0);
 }
 
-if (queueHasUrl(url) && !force) {
+const alreadyQueued = queueHasUrl(url) && !force;
+if (alreadyQueued) {
   console.log(`[vault] already queued: ${url}`);
-  process.exit(0);
+} else {
+  appendQueue({
+    id: crypto.randomUUID(),
+    url,
+    submittedAt: new Date().toISOString(),
+    source: "local-agent",
+    force
+  });
+  console.log(`[vault] queued ${url}`);
 }
-
-appendQueue({
-  id: crypto.randomUUID(),
-  url,
-  submittedAt: new Date().toISOString(),
-  source: "local-agent",
-  force
-});
-console.log(`[vault] queued ${url}`);
 
 if (!noStart) {
   if (!existsSync("node_modules")) {
@@ -45,9 +46,17 @@ if (!noStart) {
   }
   const child = spawn("pnpm", ["vault:worker", "--", "--until-idle"], {
     cwd: repoRoot,
-    detached: true,
-    stdio: "ignore"
+    detached: background,
+    stdio: background ? "ignore" : "inherit"
   });
-  child.unref();
-  console.log("[vault] background worker started");
+
+  if (background) {
+    child.unref();
+    console.log("[vault] background worker started");
+  } else {
+    const code = await new Promise<number>((resolve) => {
+      child.on("close", (exitCode) => resolve(exitCode ?? 0));
+    });
+    process.exit(code);
+  }
 }

@@ -1,6 +1,6 @@
 ---
 name: tool-collector
-description: Use this skill when the user sends a URL to collect into the Asset Vault, asks to save/bookmark/archive a tool, or wants the local background worker to process saved links without using Computer Use or a visible browser.
+description: Use this skill when the user sends a URL to collect into the Asset Vault, asks to save/bookmark/archive a tool, or wants the headless collector to process saved links without using Computer Use or a visible browser.
 ---
 
 # Tool Collector
@@ -9,10 +9,11 @@ description: Use this skill when the user sends a URL to collect into the Asset 
 
 When the user asks to collect a URL:
 
-1. Run `pnpm vault:add <url>` from the repo root.
+1. Run `pnpm vault:add <url>` from the repo root. For external URLs in sandboxed environments, request network approval before the first attempt.
 2. Do not open the URL locally.
 3. Do not use Computer Use, GUI browser automation, mouse, keyboard, or the user's visible browser.
-4. Tell the user the URL was queued and the background worker will process it.
+4. Wait for the command to finish processing, validation, commit, and push.
+5. Tell the user collection finished only after the command exits successfully.
 
 ## Worker Rules
 
@@ -27,5 +28,6 @@ When the user asks to collect a URL:
 
 - `pnpm vault:process --once`: process one queued URL in the foreground.
 - `pnpm vault:worker`: keep processing queue in the foreground.
+- `pnpm vault:add <url> --background`: queue a URL and start a detached worker only when explicitly requested.
 - `pnpm vault:validate`: validate generated content.
 - `pnpm vault:build`: validate, build the site, and create Pagefind search index.
