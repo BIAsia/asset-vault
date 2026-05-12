@@ -8,11 +8,11 @@ dist
 .pnpm-state
 .pnpm-store
 .playwright-browsers
+.vercel
 .env
 .env.local
 *.log
 .DS_Store
+inbox/failed.jsonl
 public/assets/tools/**/raw.html
 public/assets/tools/**/capture-state.json
-.vercel
-inbox/failed.jsonl
