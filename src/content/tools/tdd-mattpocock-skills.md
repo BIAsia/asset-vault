@@ -34,9 +34,9 @@ id: tdd-mattpocock-skills
 links:
   - label: skills.sh
     url: 'https://skills.sh/mattpocock/skills/tdd?open_in_browser=true'
-previewImage: /assets/tools/skills-sh-mattpocock-skills/preview.png
+previewImage: /assets/tools/skills-sh-mattpocock-skills-tdd/preview.png
 created: '2026-05-12T09:30:23.755Z'
-updated: '2026-05-12T09:41:26.656Z'
+updated: '2026-05-12T09:42:44.328Z'
 ---
 <!-- generated:start -->
 Test-driven development with red-green-refactor loop. Use when user wants to build features or fix bugs using TDD, mentions "red-green-refactor", wants…
