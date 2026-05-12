@@ -40,9 +40,9 @@ id: grill-me-mattpocock-skills
 links:
   - label: skills.sh
     url: 'https://skills.sh/mattpocock/skills/grill-me?open_in_browser=true'
-previewImage: /assets/tools/skills-sh/preview.svg
+previewImage: /assets/tools/skills-sh-mattpocock-skills-grill-me/preview.png
 created: '2026-05-12T08:53:03.289Z'
-updated: '2026-05-12T09:29:50.472Z'
+updated: '2026-05-12T09:43:13.982Z'
 ---
 <!-- generated:start -->
 Interview the user relentlessly about a plan or design until reaching shared understanding, resolving each branch of the decision tree. Use when user wants to…
