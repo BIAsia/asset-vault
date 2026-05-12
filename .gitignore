@@ -1,0 +1,16 @@
+node_modules
+dist
+.astro
+.cache
+.corepack
+.npm-cache
+.pnpm-cache
+.pnpm-state
+.pnpm-store
+.playwright-browsers
+.env
+.env.local
+*.log
+.DS_Store
+public/assets/tools/**/raw.html
+public/assets/tools/**/capture-state.json

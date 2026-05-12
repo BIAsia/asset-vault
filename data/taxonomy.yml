@@ -1,0 +1,27 @@
+tags:
+  animation:
+    aliases: [动效, 动画, motion]
+  creative-coding:
+    aliases: [创意编程, 生成艺术]
+  design:
+    aliases: [设计, 视觉]
+  graphics:
+    aliases: [图形, 图形学, visual]
+  gpu:
+    aliases: [显卡, GPU 渲染]
+  interaction:
+    aliases: [交互, 互动]
+  library:
+    aliases: [库, 框架]
+  path:
+    aliases: [路径, 曲线]
+  rendering:
+    aliases: [渲染, 图形渲染]
+  shader:
+    aliases: [着色器, 特效]
+  stroke:
+    aliases: [线条, 描边, 笔触, 文本描边]
+  typography:
+    aliases: [文字, 字体, 排版, 文本]
+  vector:
+    aliases: [矢量, vector graphics]

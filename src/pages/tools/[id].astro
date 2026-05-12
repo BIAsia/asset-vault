@@ -1,0 +1,53 @@
+---
+import { getCollection, render } from "astro:content";
+import type { CollectionEntry } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+export async function getStaticPaths() {
+  const tools = await getCollection("tools") as CollectionEntry<"tools">[];
+  return tools.map((tool: CollectionEntry<"tools">) => ({ params: { id: tool.slug }, props: { tool } }));
+}
+
+const tool = Astro.props.tool as CollectionEntry<"tools">;
+const { Content } = await render(tool);
+const data = tool.data;
+---
+
+<BaseLayout title={`${data.title} - Asset Vault`} description={data.summary}>
+  <main class="detail-shell" data-pagefind-body>
+    <nav class="detail-nav" data-pagefind-ignore>
+      <a href="/">Asset Vault</a>
+      <a href={data.url} target="_blank" rel="noreferrer">Open original</a>
+    </nav>
+
+    <header class="detail-header">
+      <div class="detail-header__copy">
+        <p class="eyebrow">{data.contentType}</p>
+        <h1>{data.title}</h1>
+        <p>{data.summary}</p>
+      </div>
+      <div class="detail-header__media">
+        {data.previewVideo ? (
+          <video src={data.previewVideo} poster={data.previewImage} muted playsinline loop controls preload="metadata"></video>
+        ) : (
+          <img src={data.previewImage} alt={`${data.title} preview`} />
+        )}
+      </div>
+    </header>
+
+    <section class="detail-meta" data-pagefind-ignore>
+      <div>
+        <h2>Tags</h2>
+        <div class="chip-row">{data.tags.map((tag: string) => <span class="chip">{tag}</span>)}</div>
+      </div>
+      <div>
+        <h2>Aliases</h2>
+        <div class="chip-row">{data.aliases.map((alias: string) => <span class="chip chip--soft">{alias}</span>)}</div>
+      </div>
+    </section>
+
+    <article class="prose">
+      <Content />
+    </article>
+  </main>
+</BaseLayout>

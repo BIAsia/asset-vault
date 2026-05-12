@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="800" viewBox="0 0 1280 800">
+  <rect width="1280" height="800" fill="#f4efe3"/>
+  <path d="M96 570 C 250 390, 410 680, 566 480 S 850 250, 1138 410" fill="none" stroke="#167c65" stroke-width="30" stroke-linecap="round"/>
+  <path d="M130 608 C 310 500, 420 700, 650 550 S 1010 340, 1190 468" fill="none" stroke="#9c5739" stroke-width="10" stroke-linecap="round" opacity=".72"/>
+  <text x="86" y="160" font-family="Georgia, serif" font-size="116" fill="#1f2635">Redraw</text>
+  <text x="94" y="228" font-family="Avenir Next, Segoe UI, sans-serif" font-size="34" fill="#5c6570">GPU vector paths, strokes, feathering, and color along path</text>
+  <g fill="#1f2635" font-family="Avenir Next, Segoe UI, sans-serif" font-size="26">
+    <text x="96" y="680">vector</text>
+    <text x="226" y="680">stroke</text>
+    <text x="350" y="680">shader</text>
+    <text x="480" y="680">path rendering</text>
+  </g>
+</svg>

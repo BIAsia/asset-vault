@@ -1,0 +1,38 @@
+{
+  "name": "asset-vault",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "build": "pnpm vault:build",
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "check": "ASTRO_TELEMETRY_DISABLED=1 astro check && tsc --noEmit",
+    "vault:add": "node --import tsx scripts/vault-add.ts",
+    "vault:process": "node --import tsx scripts/vault-process.ts",
+    "vault:worker": "node --import tsx scripts/vault-worker.ts",
+    "vault:validate": "node --import tsx scripts/vault-validate.ts",
+    "vault:rebuild-index": "node --import tsx scripts/rebuild-index.ts",
+    "vault:build": "pnpm vault:rebuild-index && pnpm vault:validate && ASTRO_TELEMETRY_DISABLED=1 astro build && pagefind --site dist --output-path dist/pagefind"
+  },
+  "dependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@astrojs/mdx": "^4.0.8",
+    "@astrojs/sitemap": "^3.2.1",
+    "@mozilla/readability": "^0.5.0",
+    "astro": "^5.1.1",
+    "fast-glob": "^3.3.3",
+    "gray-matter": "^4.0.3",
+    "jsdom": "^25.0.1",
+    "pagefind": "^1.3.0",
+    "playwright": "^1.49.1",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/jsdom": "^21.1.7",
+    "@types/node": "^22.10.2"
+  }
+}

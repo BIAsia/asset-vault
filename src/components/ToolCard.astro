@@ -1,0 +1,41 @@
+---
+import type { CollectionEntry } from "astro:content";
+
+interface Props {
+  tool: CollectionEntry<"tools">;
+}
+
+const { tool } = Astro.props;
+const data = tool.data;
+const searchable = [
+  data.title,
+  data.summary,
+  data.features.join(" "),
+  data.tags.join(" "),
+  data.aliases.join(" "),
+  data.useCases.join(" "),
+  data.whyInteresting
+].join(" ").toLowerCase();
+---
+
+<article class="tool-card" data-search={searchable} data-tags={data.tags.join(" ")}>
+  <a class="tool-card__media" href={`/tools/${tool.slug}/`} aria-label={`查看 ${data.title}`}>
+    {data.previewVideo ? (
+      <video src={data.previewVideo} poster={data.previewImage} muted playsinline loop preload="metadata"></video>
+    ) : (
+      <img src={data.previewImage} alt={`${data.title} preview`} loading="lazy" />
+    )}
+  </a>
+  <div class="tool-card__body">
+    <div class="tool-card__topline">
+      <span>{data.contentType}</span>
+      <time datetime={data.updated.toISOString()}>{data.updated.toISOString().slice(0, 10)}</time>
+    </div>
+    <h2><a href={`/tools/${tool.slug}/`}>{data.title}</a></h2>
+    <p>{data.summary}</p>
+    <div class="chip-row" aria-label="Tags">
+      {data.tags.slice(0, 5).map((tag: string) => <span class="chip">{tag}</span>)}
+      {data.aliases.slice(0, 4).map((alias: string) => <span class="chip chip--soft">{alias}</span>)}
+    </div>
+  </div>
+</article>
