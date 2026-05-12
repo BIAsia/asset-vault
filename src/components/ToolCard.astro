@@ -10,6 +10,7 @@ const data = tool.data;
 const searchable = [
   data.title,
   data.summary,
+  data.links.map((link) => `${link.label} ${link.url}`).join(" "),
   data.features.join(" "),
   data.tags.join(" "),
   data.aliases.join(" "),

@@ -14,6 +14,11 @@ export const AiToolCardSchema = z.object({
   whyInteresting: z.string().min(1).max(600)
 });
 
+export const LinkSchema = z.object({
+  label: z.string().min(1),
+  url: z.string().url()
+});
+
 const DateStringSchema = z.preprocess(
   (value) => value instanceof Date ? value.toISOString() : value,
   z.string().datetime()
@@ -22,6 +27,7 @@ const DateStringSchema = z.preprocess(
 export const MaterializedToolSchema = AiToolCardSchema.extend({
   schemaVersion: z.literal(1),
   id: z.string().min(2),
+  links: z.array(LinkSchema).default([]),
   previewImage: z.string().min(1),
   previewVideo: z.string().optional(),
   created: DateStringSchema,

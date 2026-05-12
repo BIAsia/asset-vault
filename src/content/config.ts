@@ -7,6 +7,10 @@ const tools = defineCollection({
     id: z.string().min(2),
     title: z.string().min(1),
     url: z.string().url(),
+    links: z.array(z.object({
+      label: z.string().min(1),
+      url: z.string().url()
+    })).default([]),
     contentType: z.enum(["tool", "library", "reference", "demo", "article", "video", "repo"]).default("tool"),
     summary: z.string().min(1),
     features: z.array(z.string()).default([]),

@@ -11,6 +11,7 @@ export async function getStaticPaths() {
 const tool = Astro.props.tool as CollectionEntry<"tools">;
 const { Content } = await render(tool);
 const data = tool.data;
+const links = data.links.length ? data.links : [{ label: new URL(data.url).hostname.replace(/^www\./, ""), url: data.url }];
 ---
 
 <BaseLayout title={`${data.title} - Asset Vault`} description={data.summary}>
@@ -43,6 +44,10 @@ const data = tool.data;
       <div>
         <h2>Aliases</h2>
         <div class="chip-row">{data.aliases.map((alias: string) => <span class="chip chip--soft">{alias}</span>)}</div>
+      </div>
+      <div>
+        <h2>Links</h2>
+        <div class="chip-row">{links.map((link: { label: string; url: string }) => <a class="chip chip--soft" href={link.url} target="_blank" rel="noreferrer">{link.label}</a>)}</div>
       </div>
     </section>
 

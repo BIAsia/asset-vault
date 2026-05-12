@@ -26,7 +26,45 @@ export async function readExistingTools(): Promise<ExistingTool[]> {
 
 export async function findToolByUrl(url: string) {
   const tools = await readExistingTools();
-  return tools.find((tool) => tool.data.url === url);
+  return tools.find((tool) => toolHasUrl(tool, url));
+}
+
+function canonicalContentKey(url: string) {
+  const parsed = new URL(url);
+  const host = parsed.hostname.toLowerCase().replace(/^www\./, "");
+  const pathParts = parsed.pathname.split("/").filter(Boolean);
+  if (host === "github.com" && pathParts.length >= 2) {
+    return `${host}/${pathParts[0].toLowerCase()}/${pathParts[1].toLowerCase()}`;
+  }
+
+  return `${host}/${pathParts.join("/").toLowerCase()}`;
+}
+
+function valuesFromUnknown(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value.flatMap((item) => {
+    if (typeof item === "string") return [item];
+    if (item && typeof item === "object" && "url" in item && typeof item.url === "string") return [item.url];
+    return [];
+  });
+}
+
+function toolUrls(tool: ExistingTool) {
+  return [tool.data.url, ...valuesFromUnknown(tool.data.links)]
+    .filter((value): value is string => typeof value === "string");
+}
+
+function toolHasUrl(tool: ExistingTool, url: string) {
+  return toolUrls(tool).includes(url);
+}
+
+function toolMatchesContentKey(tool: ExistingTool, url: string) {
+  const incoming = canonicalContentKey(url);
+  return toolUrls(tool).some((toolUrl) => canonicalContentKey(toolUrl) === incoming);
+}
+
+function findToolForCardUrl(tools: ExistingTool[], url: string) {
+  return tools.find((tool) => toolHasUrl(tool, url)) ?? tools.find((tool) => toolMatchesContentKey(tool, url));
 }
 
 function preserveManualContent(existing?: ExistingTool) {
@@ -40,11 +78,12 @@ function preserveManualContent(existing?: ExistingTool) {
   return manual ? `\n${manual}\n` : "\n## My Notes\n\n";
 }
 
-function generatedBody(card: AiToolCard) {
-  const features = card.features.map((item) => `- ${item}`).join("\n");
-  const useCases = card.useCases.map((item) => `- ${item}`).join("\n");
+function generatedBody(tool: MaterializedTool) {
+  const features = tool.features.map((item) => `- ${item}`).join("\n");
+  const useCases = tool.useCases.map((item) => `- ${item}`).join("\n");
+  const sourceLinks = tool.links.map((link) => `- [${link.label}](${link.url})`).join("\n");
   return `${START}
-${card.summary}
+${tool.summary}
 
 ## Features
 
@@ -56,11 +95,11 @@ ${useCases}
 
 ## Why It Matters
 
-${card.whyInteresting}
+${tool.whyInteresting}
 
 ## Source
 
-[Open original](${card.url})
+${sourceLinks}
 ${END}`;
 }
 
@@ -72,24 +111,43 @@ function uniqueId(base: string, existing: ExistingTool[], url: string) {
   return `${base}-${shortHash(url)}`;
 }
 
+function mergeStringArray(existing: unknown, incoming: string[]) {
+  const existingValues = Array.isArray(existing) ? existing.filter((value): value is string => typeof value === "string") : [];
+  return [...existingValues, ...incoming].filter((value, index, all) => all.indexOf(value) === index);
+}
+
 export async function materializeTool(card: AiToolCard, assets: { previewImage: string; previewVideo?: string }) {
   mkdirSync(contentToolsDir, { recursive: true });
   const existingTools = await readExistingTools();
-  const existing = existingTools.find((tool) => tool.data.url === card.url);
-  const id = uniqueId(slugFromUrl(card.url, card.title), existingTools, card.url);
+  const existing = findToolForCardUrl(existingTools, card.url);
+  const id = typeof existing?.data.id === "string" ? existing.data.id : uniqueId(slugFromUrl(card.url, card.title), existingTools, card.url);
   const now = new Date().toISOString();
   const created = typeof existing?.data.created === "string" ? existing.data.created : now;
+  const existingLinks = Array.isArray(existing?.data.links) ? existing.data.links : [];
+  const cardContentKey = canonicalContentKey(card.url);
+  const sameContentLinks = valuesFromUnknown(existingLinks).filter((url) => canonicalContentKey(url) === cardContentKey);
+  const sameContentPrimary = typeof existing?.data.url === "string" && canonicalContentKey(existing.data.url) === cardContentKey
+    ? existing.data.url
+    : undefined;
+  const links = [
+    ...sameContentLinks.map((url) => ({ label: new URL(url).hostname.replace(/^www\./, ""), url })),
+    ...(sameContentPrimary ? [{ label: new URL(sameContentPrimary).hostname.replace(/^www\./, ""), url: sameContentPrimary }] : []),
+    { label: new URL(card.url).hostname.replace(/^www\./, ""), url: card.url }
+  ].filter((link, index, all) => all.findIndex((candidate) => candidate.url === link.url) === index);
+  const preferNewPrimary = sameContentPrimary && new URL(sameContentPrimary).hostname === "github.com" && new URL(card.url).hostname !== "github.com";
+  const primaryUrl = preferNewPrimary ? card.url : (sameContentPrimary ?? card.url);
   const rawTool = {
     schemaVersion: 1,
     id,
     title: card.title,
-    url: card.url,
+    url: primaryUrl,
+    links,
     contentType: card.contentType,
     summary: card.summary,
-    features: card.features,
-    tags: card.tags,
-    aliases: card.aliases,
-    useCases: card.useCases,
+    features: mergeStringArray(existing?.data.features, card.features),
+    tags: mergeStringArray(existing?.data.tags, card.tags),
+    aliases: mergeStringArray(existing?.data.aliases, card.aliases),
+    useCases: mergeStringArray(existing?.data.useCases, card.useCases),
     whyInteresting: card.whyInteresting,
     previewImage: assets.previewImage,
     created,
@@ -100,7 +158,7 @@ export async function materializeTool(card: AiToolCard, assets: { previewImage: 
   );
 
   const filePath = existing?.filePath ?? path.join(contentToolsDir, `${id}.md`);
-  const body = `${generatedBody(card)}${preserveManualContent(existing)}`;
+  const body = `${generatedBody(tool)}${preserveManualContent(existing)}`;
   const file = matter.stringify(body, tool);
   writeFileSync(filePath, file);
   return { filePath, tool };

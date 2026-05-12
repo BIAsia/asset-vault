@@ -9,10 +9,12 @@ const errors: string[] = [];
 for (const file of files) {
   try {
     const tool = parseToolFile(file);
-    if (seenUrls.has(tool.url)) {
-      errors.push(`Duplicate URL: ${tool.url} in ${file} and ${seenUrls.get(tool.url)}`);
+    for (const url of [tool.url, ...tool.links.map((link) => link.url)]) {
+      if (seenUrls.has(url) && seenUrls.get(url) !== file) {
+        errors.push(`Duplicate URL: ${url} in ${file} and ${seenUrls.get(url)}`);
+      }
+      seenUrls.set(url, file);
     }
-    seenUrls.set(tool.url, file);
     if (!assetExists(tool.previewImage)) {
       errors.push(`Missing previewImage for ${tool.id}: ${tool.previewImage}`);
     }
