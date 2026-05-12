@@ -4,8 +4,8 @@ import { ArrowLeft, ExternalLink, Link as LinkIcon } from "lucide-react";
 import { Badge } from "@/components/fluid/badge";
 import { Button } from "@/components/fluid/button";
 import { Table, TableBody, TableCell, TableRow } from "@/components/fluid/table";
+import { fontWeights } from "@/lib/font-weight";
 import { ShapeProvider } from "@/lib/shape-context";
-import { surfaceClasses } from "@/lib/surface-classes";
 import { cn } from "@/lib/utils";
 import type { ToolAsset } from "@/lib/vault";
 
@@ -13,107 +13,157 @@ interface AssetDetailProps {
   asset: ToolAsset;
 }
 
+const badgeColors = ["gray", "blue", "teal", "violet", "amber", "rose", "green"] as const;
+
+function colorFor(value: string) {
+  let total = 0;
+  for (const char of value) total += char.charCodeAt(0);
+  return badgeColors[total % badgeColors.length];
+}
+
 function formatDate(value: string) {
   return new Intl.DateTimeFormat("en", { month: "short", day: "2-digit", year: "numeric" }).format(new Date(value));
+}
+
+function AssetPreview({ asset }: { asset: ToolAsset }) {
+  if (asset.previewVideo) {
+    return (
+      <video
+        className="aspect-[16/10] h-full w-full object-contain"
+        src={asset.previewVideo}
+        poster={asset.previewImage}
+        muted
+        playsInline
+        loop
+        controls
+        preload="metadata"
+      />
+    );
+  }
+
+  return (
+    <img
+      className="aspect-[16/10] h-full w-full object-contain"
+      src={asset.previewImage}
+      alt={`${asset.title} preview`}
+    />
+  );
 }
 
 export default function AssetDetail({ asset }: AssetDetailProps) {
   return (
     <ShapeProvider defaultShape="pill">
-      <section className="grid gap-5">
-        <nav className="flex flex-wrap items-center justify-between gap-3">
-          <Button asChild variant="ghost" leadingIcon={ArrowLeft}>
+      <section className="grid gap-8">
+        <nav className="flex items-center justify-between gap-3">
+          <Button asChild variant="ghost" size="sm" leadingIcon={ArrowLeft}>
             <a href="/">Asset Vault</a>
           </Button>
-          <div className="flex flex-wrap gap-2">
-            {asset.links.map((link) => (
-              <Button key={link.url} asChild variant="tertiary" trailingIcon={ExternalLink}>
-                <a href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
-              </Button>
-            ))}
-          </div>
+          <Button asChild variant="ghost" size="icon-sm" aria-label={`Open ${asset.title} original`}>
+            <a href={asset.url} target="_blank" rel="noreferrer">
+              <ExternalLink />
+            </a>
+          </Button>
         </nav>
 
-        <header className={cn("grid gap-5 p-4 lg:grid-cols-[minmax(0,0.9fr)_minmax(360px,1.1fr)] lg:items-center", surfaceClasses(2, 3), "rounded-3xl")}>
-          <div className="grid gap-5">
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="dot">{asset.contentType}</Badge>
-              {asset.tags.slice(0, 4).map((tag) => <Badge key={tag}>{tag}</Badge>)}
-            </div>
-            <div>
-              <h1 className="text-[clamp(36px,7vw,88px)] font-semibold leading-[0.92] tracking-[-0.045em]">{asset.title}</h1>
-              <p className="mt-4 max-w-2xl text-[15px] leading-7 text-muted-foreground">{asset.summary}</p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="primary" trailingIcon={ExternalLink}>
-                <a href={asset.url} target="_blank" rel="noreferrer">Open primary</a>
-              </Button>
-              <Button asChild variant="secondary" leadingIcon={LinkIcon}>
-                <a href="#details">Inspect details</a>
-              </Button>
-            </div>
+        <header className="grid gap-4">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <Badge variant="dot" size="sm" color={colorFor(asset.contentType)}>{asset.contentType}</Badge>
+            {asset.tags.slice(0, 4).map((tag) => (
+              <Badge key={tag} size="sm" color={colorFor(tag)}>{tag}</Badge>
+            ))}
           </div>
-          <div className={cn("overflow-hidden", surfaceClasses(3, 6), "rounded-3xl")}>
-            {asset.previewVideo ? (
-              <video className="aspect-[16/10] h-full w-full object-cover" src={asset.previewVideo} poster={asset.previewImage} muted playsInline loop controls preload="metadata" />
-            ) : (
-              <img className="aspect-[16/10] h-full w-full object-cover" src={asset.previewImage} alt={`${asset.title} preview`} />
-            )}
+          <div className="grid gap-2">
+            <h1
+              className="text-[22px] leading-none text-foreground sm:text-[28px]"
+              style={{ fontVariationSettings: fontWeights.bold }}
+            >
+              {asset.title}
+            </h1>
+            <p className="max-w-[65ch] text-[14px] leading-6 text-muted-foreground">{asset.summary}</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button asChild variant="primary" size="sm" trailingIcon={ExternalLink}>
+              <a href={asset.url} target="_blank" rel="noreferrer">Open primary</a>
+            </Button>
+            <Button asChild variant="tertiary" size="sm" leadingIcon={LinkIcon}>
+              <a href="#links">Links</a>
+            </Button>
           </div>
         </header>
 
-        <section id="details" className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className={cn("grid gap-4 p-4", surfaceClasses(3, 4), "rounded-3xl")}>
-            <div>
-              <p className="text-[12px] text-muted-foreground">Why it matters</p>
-              <p className="mt-2 text-[18px] leading-7 tracking-[-0.02em]">{asset.whyInteresting}</p>
+        <section className="overflow-hidden rounded-xl border bento-card-border">
+          <div className="flex min-h-[260px] items-center justify-center overflow-hidden px-4 py-8 sm:px-6 sm:py-12">
+            <div className="w-full overflow-hidden rounded-lg border border-border/50 bg-muted">
+              <AssetPreview asset={asset} />
             </div>
+          </div>
+          <a
+            href={asset.url}
+            target="_blank"
+            rel="noreferrer"
+            className="group/link flex items-center gap-2 border-t border-border/40 px-4 py-3 transition-colors duration-80 outline-none hover:bg-hover focus-visible:shadow-[inset_0_0_0_1px_#6B97FF]"
+          >
+            <span
+              className="text-[13px] text-muted-foreground transition-colors duration-80 group-hover/link:text-foreground"
+              style={{ fontVariationSettings: fontWeights.medium }}
+            >
+              {new URL(asset.url).hostname.replace(/^www\./, "")}
+            </span>
+            <ExternalLink size={14} strokeWidth={1.5} className="text-muted-foreground transition-colors duration-80 group-hover/link:text-foreground" />
+          </a>
+        </section>
+
+        <section id="details" className="grid gap-5">
+          <div className="grid gap-2">
+            <h2 className="text-[16px] text-foreground" style={{ fontVariationSettings: fontWeights.semibold }}>Why it matters</h2>
+            <p className="text-[14px] leading-7 text-muted-foreground">{asset.whyInteresting}</p>
+          </div>
+
+          <div className="overflow-hidden rounded-xl border bento-card-border">
             <Table>
               <TableBody>
                 {asset.features.map((feature, index) => (
                   <TableRow key={feature} index={index}>
-                    <TableCell className="w-28 text-foreground">Feature</TableCell>
+                    <TableCell className="w-24 text-foreground">Feature</TableCell>
                     <TableCell>{feature}</TableCell>
                   </TableRow>
                 ))}
                 {asset.useCases.map((useCase, index) => (
                   <TableRow key={useCase} index={asset.features.length + index}>
-                    <TableCell className="w-28 text-foreground">Use case</TableCell>
+                    <TableCell className="w-24 text-foreground">Use case</TableCell>
                     <TableCell>{useCase}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
           </div>
+        </section>
 
-          <aside className={cn("grid h-fit gap-5 p-4", surfaceClasses(3, 4), "rounded-3xl")}>
-            <div>
-              <p className="mb-2 text-[12px] text-muted-foreground">Aliases</p>
-              <div className="flex flex-wrap gap-1.5">
-                {asset.aliases.map((alias) => <span key={alias} className="rounded-full bg-hover px-2.5 py-1 text-[12px] text-muted-foreground">{alias}</span>)}
-              </div>
+        <section className="grid gap-5">
+          <div className="grid gap-2">
+            <h2 className="text-[16px] text-foreground" style={{ fontVariationSettings: fontWeights.semibold }}>Aliases</h2>
+            <div className="flex flex-wrap gap-1.5">
+              {asset.aliases.map((alias) => (
+                <Badge key={alias} size="sm" color="gray">{alias}</Badge>
+              ))}
             </div>
-            <div>
-              <p className="mb-2 text-[12px] text-muted-foreground">Links</p>
-              <div className="grid gap-2">
-                {asset.links.map((link) => (
-                  <a key={link.url} className="truncate rounded-full bg-hover px-3 py-2 text-[13px] text-foreground transition-colors hover:bg-active" href={link.url} target="_blank" rel="noreferrer">
-                    {link.label}
-                  </a>
-                ))}
-              </div>
+          </div>
+
+          <div id="links" className="grid gap-2">
+            <h2 className="text-[16px] text-foreground" style={{ fontVariationSettings: fontWeights.semibold }}>Links</h2>
+            <div className="flex flex-wrap gap-2">
+              {asset.links.map((link) => (
+                <Button key={link.url} asChild variant="tertiary" size="sm" trailingIcon={ExternalLink}>
+                  <a href={link.url} target="_blank" rel="noreferrer">{link.label}</a>
+                </Button>
+              ))}
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              <div className="rounded-2xl bg-hover px-3 py-2">
-                <p className="text-[11px] text-muted-foreground">Created</p>
-                <p className="text-[13px]">{formatDate(asset.created)}</p>
-              </div>
-              <div className="rounded-2xl bg-hover px-3 py-2">
-                <p className="text-[11px] text-muted-foreground">Updated</p>
-                <p className="text-[13px]">{formatDate(asset.updated)}</p>
-              </div>
-            </div>
-          </aside>
+          </div>
+
+          <div className={cn("grid gap-2 rounded-xl border px-4 py-3 text-[13px] text-muted-foreground bento-card-border sm:grid-cols-2")}>
+            <p>Created <span className="text-foreground">{formatDate(asset.created)}</span></p>
+            <p>Updated <span className="text-foreground">{formatDate(asset.updated)}</span></p>
+          </div>
         </section>
       </section>
     </ShapeProvider>

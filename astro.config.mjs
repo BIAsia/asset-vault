@@ -6,6 +6,9 @@ import { defineConfig } from "astro/config";
 
 export default defineConfig({
   site: "https://asset-vault-umber.vercel.app",
+  devToolbar: {
+    enabled: false
+  },
   integrations: [mdx(), react(), sitemap()],
   vite: {
     plugins: [tailwindcss()]
