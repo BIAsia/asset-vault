@@ -43,13 +43,11 @@ whyInteresting: >-
 schemaVersion: 1
 id: github-mickadesign-fluid-functionalism-github
 links:
-  - label: github.com
-    url: 'https://github.com/mickadesign/fluid-functionalism'
   - label: fluidfunctionalism.com
     url: 'https://www.fluidfunctionalism.com/'
-previewImage: /assets/tools/fluidfunctionalism-com/preview.svg
+previewImage: /assets/tools/fluidfunctionalism-com/preview.png
 created: '2026-05-12T08:58:55.042Z'
-updated: '2026-05-12T09:05:13.470Z'
+updated: '2026-05-12T09:44:00.989Z'
 ---
 <!-- generated:start -->
 Shadcn components used in service of functional clarity.
@@ -75,7 +73,6 @@ Fluid Functionalism was collected because it appears relevant to animation workf
 
 ## Source
 
-- [github.com](https://github.com/mickadesign/fluid-functionalism)
 - [fluidfunctionalism.com](https://www.fluidfunctionalism.com/)
 <!-- generated:end -->
 ## My Notes
