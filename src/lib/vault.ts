@@ -73,7 +73,7 @@ export function toToolAsset(tool: CollectionEntry<"tools">): ToolAsset {
   ].join(" ").toLowerCase();
 
   return {
-    id: tool.slug,
+    id: data.id,
     slug: tool.slug,
     href: `/tools/${tool.slug}/`,
     title: data.title,

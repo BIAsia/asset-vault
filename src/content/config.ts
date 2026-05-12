@@ -4,6 +4,7 @@ const tools = defineCollection({
   type: "content",
   schema: z.object({
     schemaVersion: z.literal(1),
+    id: z.string().min(2),
     title: z.string().min(1),
     url: z.string().url(),
     links: z.array(z.object({

@@ -50,6 +50,7 @@ whyInteresting: >-
   Redraw was collected because it appears relevant to graphics, vector, stroke,
   shader, rendering, library workflows.
 schemaVersion: 1
+id: redraw
 links:
   - label: wcandillon.github.io
     url: 'https://wcandillon.github.io/redraw/'
