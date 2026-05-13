@@ -221,10 +221,13 @@ p {
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.6);
 }
 
+.bento-grid {
+  grid-auto-rows: 340px;
+}
+
 @media (min-width: 768px) {
   .bento-grid {
     grid-auto-flow: dense;
-    grid-auto-rows: 340px;
   }
 }
 

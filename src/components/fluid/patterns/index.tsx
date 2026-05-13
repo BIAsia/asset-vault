@@ -5,14 +5,6 @@ import type { ButtonHTMLAttributes, CSSProperties, ReactNode } from "react";
 import { fontWeights } from "@/lib/font-weight";
 import { cn } from "@/lib/utils";
 
-const bentoSizeClasses = {
-  large: "md:col-span-2 md:row-span-2",
-  wide: "md:col-span-2",
-  small: "col-span-1",
-} as const;
-
-type BentoSize = keyof typeof bentoSizeClasses;
-
 interface CatalogIntroProps {
   badges?: ReactNode;
   title: string;
@@ -58,7 +50,6 @@ interface BentoCardProps {
   summary?: string;
   aliases?: ReactNode;
   action?: ReactNode;
-  gridSize?: BentoSize;
   className?: string;
   style?: CSSProperties;
 }
@@ -71,12 +62,11 @@ function BentoCard({
   summary,
   aliases,
   action,
-  gridSize = "small",
   className,
   style,
 }: BentoCardProps) {
   const content = (
-    <div className="flex flex-1 items-center justify-center overflow-hidden px-4 py-8 sm:px-6">
+    <div className="flex min-h-0 flex-1 items-center justify-center overflow-hidden px-4 py-8 sm:px-6">
       {children}
     </div>
   );
@@ -85,13 +75,12 @@ function BentoCard({
     <article
       className={cn(
         "group relative flex flex-col overflow-hidden rounded-xl border transition-[shadow,border-color] duration-80 bento-card-border",
-        bentoSizeClasses[gridSize],
         className
       )}
       style={style}
     >
       {href ? (
-        <a className="flex flex-1 outline-none focus-visible:shadow-[inset_0_0_0_1px_#6B97FF]" href={href} aria-label={`Open ${title}`}>
+        <a className="flex min-h-0 flex-1 outline-none focus-visible:shadow-[inset_0_0_0_1px_#6B97FF]" href={href} aria-label={`Open ${title}`}>
           {content}
         </a>
       ) : (
@@ -296,4 +285,3 @@ export {
   PreviewFrame,
   TableFrame,
 };
-export type { BentoSize };

@@ -32,7 +32,6 @@ import {
   FilterSection,
   PreviewFrame,
   TableFrame,
-  type BentoSize,
 } from "@/components/fluid/patterns";
 import type { ToolAsset, VaultFacet, VaultIndex } from "@/lib/vault";
 
@@ -53,12 +52,6 @@ function colorFor(value: string) {
 function formatDate(value?: string) {
   if (!value) return "No updates";
   return new Intl.DateTimeFormat("en", { month: "short", day: "2-digit", year: "numeric" }).format(new Date(value));
-}
-
-function cardGridSize(index: number): BentoSize {
-  if (index === 0) return "large";
-  if (index === 3) return "wide";
-  return "small";
 }
 
 function FacetRow({
@@ -146,7 +139,7 @@ function AssetPreview({ asset }: { asset: ToolAsset }) {
   );
 }
 
-function AssetCard({ asset, index }: { asset: ToolAsset; index: number }) {
+function AssetCard({ asset }: { asset: ToolAsset }) {
   const badges = (
     <>
       <Badge variant="dot" size="sm" color={colorFor(asset.contentType)}>{asset.contentType}</Badge>
@@ -162,9 +155,8 @@ function AssetCard({ asset, index }: { asset: ToolAsset; index: number }) {
       title={asset.title}
       badges={badges}
       summary={asset.summary}
-      gridSize={cardGridSize(index)}
     >
-      <PreviewFrame>
+      <PreviewFrame className="h-full">
         <AssetPreview asset={asset} />
       </PreviewFrame>
     </BentoCard>
@@ -305,7 +297,7 @@ export default function VaultHome({ vault }: VaultHomeProps) {
           {filteredAssets.length > 0 ? (
             viewMode === "gallery" ? (
               <BentoGrid>
-                {filteredAssets.map((asset, index) => <AssetCard key={asset.id} asset={asset} index={index} />)}
+                {filteredAssets.map((asset) => <AssetCard key={asset.id} asset={asset} />)}
               </BentoGrid>
             ) : (
               <AssetTable assets={filteredAssets} />
