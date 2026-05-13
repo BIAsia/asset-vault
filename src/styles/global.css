@@ -178,7 +178,7 @@ video {
 
 button,
 input {
-  font: inherit;
+  font-family: inherit;
 }
 
 h1,
@@ -224,7 +224,7 @@ p {
 @media (min-width: 768px) {
   .bento-grid {
     grid-auto-flow: dense;
-    grid-auto-rows: 300px;
+    grid-auto-rows: 340px;
   }
 }
 
@@ -300,6 +300,22 @@ p {
   font-size: 0.86em;
 }
 
+.ff-notes > p:first-of-type,
+.ff-notes > h2#features,
+.ff-notes > h2#features + ul,
+.ff-notes > h2#use-cases,
+.ff-notes > h2#use-cases + ul,
+.ff-notes > h2#why-it-matters,
+.ff-notes > h2#why-it-matters + p,
+.ff-notes > h2#source,
+.ff-notes > h2#source + ul {
+  display: none;
+}
+
+.ff-notes > h2#my-notes {
+  margin-top: 0;
+}
+
 @keyframes spinner-move {
   to {
     stroke-dashoffset: -100;
@@ -317,25 +333,11 @@ p {
   }
 }
 
-.ff-pagefind {
-  --pagefind-ui-scale: 0.82;
-  --pagefind-ui-primary: var(--foreground);
-  --pagefind-ui-text: var(--foreground);
-  --pagefind-ui-background: var(--surface-2);
-  --pagefind-ui-border: var(--border);
-  --pagefind-ui-tag: var(--hover);
-  --pagefind-ui-border-width: 1px;
-  --pagefind-ui-border-radius: 24px;
-  --pagefind-ui-image-border-radius: 16px;
-  color: var(--foreground);
-}
-
-.ff-pagefind .pagefind-ui__search-input {
-  box-shadow: none;
-}
-
-.ff-pagefind .pagefind-ui__result {
-  border-color: var(--border);
+.line-clamp-2 {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .line-clamp-3 {

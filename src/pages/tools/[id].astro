@@ -18,7 +18,7 @@ const { Content } = await render(tool);
 <BaseLayout title={`${asset.title} - Asset Vault`} description={asset.summary}>
   <main class="ff-detail-shell" data-pagefind-body>
     <AssetDetail asset={asset} client:load />
-    <article class="ff-prose">
+    <article class="ff-prose ff-notes">
       <Content />
     </article>
   </main>
