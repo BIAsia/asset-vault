@@ -1,5 +1,38 @@
 [
   {
+    "title": "DitherShader: Free Backgrounds Component by FramerHub.io — Framer Marketplace",
+    "url": "https://www.framer.com/marketplace/components/dithershader/",
+    "contentType": "tool",
+    "summary": "A high-performance, interactive dithering effect component for Framer.",
+    "features": [
+      "DitherShader: Free Backgrounds Component by FramerHub.io — Framer Marketplace"
+    ],
+    "tags": [
+      "shader"
+    ],
+    "aliases": [
+      "着色器",
+      "特效"
+    ],
+    "useCases": [
+      "工具调研",
+      "视觉参考",
+      "项目灵感沉淀"
+    ],
+    "whyInteresting": "DitherShader: Free Backgrounds Component by FramerHub.io — Framer Marketplace was collected because it appears relevant to shader workflows.",
+    "schemaVersion": 1,
+    "id": "dithershader-free-backgrounds-component-by-framerhub-io-framer-marketpla",
+    "links": [
+      {
+        "label": "framer.com",
+        "url": "https://www.framer.com/marketplace/components/dithershader/"
+      }
+    ],
+    "previewImage": "/assets/tools/framer-com-marketplace-components-dithershader/preview.png",
+    "created": "2026-05-22T17:27:02.939Z",
+    "updated": "2026-05-22T17:27:02.939Z"
+  },
+  {
     "title": "Interfaces › Design Engineering Magazine",
     "url": "https://interfaces.dev/",
     "contentType": "tool",
