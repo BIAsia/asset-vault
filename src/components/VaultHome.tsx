@@ -3,6 +3,8 @@
 import { useMemo, useState, type ComponentType } from "react";
 import {
   ArrowRight,
+  Check,
+  Clipboard,
   ExternalLink,
   Grid3X3,
   Layers3,
@@ -139,6 +141,60 @@ function AssetPreview({ asset }: { asset: ToolAsset }) {
   );
 }
 
+async function copyText(text: string) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(text);
+    return;
+  }
+
+  const textarea = document.createElement("textarea");
+  textarea.value = text;
+  textarea.setAttribute("readonly", "");
+  textarea.style.position = "fixed";
+  textarea.style.top = "-9999px";
+  document.body.append(textarea);
+
+  try {
+    textarea.select();
+    const legacyCopy = (document as unknown as { execCommand?: (command: string) => boolean }).execCommand;
+    const didCopy = legacyCopy?.call(document, "copy");
+    if (!didCopy) throw new Error("Unable to copy text");
+  } finally {
+    textarea.remove();
+  }
+}
+
+function CopyOriginalUrlButton({ asset }: { asset: ToolAsset }) {
+  const [copyStatus, setCopyStatus] = useState<"idle" | "copied" | "failed">("idle");
+
+  const copyOriginalUrl = async () => {
+    try {
+      await copyText(asset.url);
+      setCopyStatus("copied");
+    } catch {
+      setCopyStatus("failed");
+    }
+
+    window.setTimeout(() => setCopyStatus("idle"), 1800);
+  };
+
+  const isCopied = copyStatus === "copied";
+
+  return (
+    <Button
+      variant="ghost"
+      size="sm"
+      className="min-w-[86px]"
+      leadingIcon={isCopied ? Check : Clipboard}
+      onClick={copyOriginalUrl}
+      aria-label={`Copy original URL for ${asset.title}`}
+      aria-live="polite"
+    >
+      {isCopied ? "Copied" : copyStatus === "failed" ? "Failed" : "Copy URL"}
+    </Button>
+  );
+}
+
 function AssetCard({ asset }: { asset: ToolAsset }) {
   const badges = (
     <>
@@ -155,6 +211,7 @@ function AssetCard({ asset }: { asset: ToolAsset }) {
       title={asset.title}
       badges={badges}
       summary={asset.summary}
+      action={<CopyOriginalUrlButton asset={asset} />}
     >
       <PreviewFrame className="h-full">
         <AssetPreview asset={asset} />
