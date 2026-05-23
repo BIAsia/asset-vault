@@ -17,6 +17,21 @@ function extractJson(value: string) {
   return trimmed.slice(start, end + 1);
 }
 
+function aliasesWithFallback(tags: string[], aliases: string[], page: CapturedPage) {
+  const hostname = new URL(page.finalUrl).hostname.replace(/^www\./, "");
+  const hostNameParts = hostname
+    .split(".")[0]
+    .split(/[-_]/)
+    .filter(Boolean);
+  const fallbackAliases = [
+    page.title,
+    hostname,
+    ...hostNameParts,
+    ...tags
+  ];
+  return [...new Set([...aliases, ...fallbackAliases].map((item) => item.trim()).filter(Boolean))].slice(0, 30);
+}
+
 function heuristicCard(page: CapturedPage, taxonomy: Taxonomy): AiToolCard {
   const corpus = `${page.title} ${page.description} ${page.text}`.toLowerCase();
   const tags: string[] = [];
@@ -35,7 +50,7 @@ function heuristicCard(page: CapturedPage, taxonomy: Taxonomy): AiToolCard {
     if (pattern.test(corpus)) tags.push(tag);
   }
   const normalizedTags = normalizeTags(tags.length ? tags : ["reference"], taxonomy);
-  const aliases = expandAliases(normalizedTags, [], taxonomy);
+  const aliases = aliasesWithFallback(normalizedTags, expandAliases(normalizedTags, [], taxonomy), page);
   const title = page.title || new URL(page.finalUrl).hostname;
   const summary =
     page.description ||
@@ -121,7 +136,7 @@ export async function generateToolCard(page: CapturedPage, taxonomy: Taxonomy): 
       ...parsed,
       url: page.finalUrl,
       tags,
-      aliases: expandAliases(tags, parsed.aliases, taxonomy)
+      aliases: aliasesWithFallback(tags, expandAliases(tags, parsed.aliases, taxonomy), page)
     });
   } catch (error) {
     console.warn(`[vault] AI generation failed, using heuristic fallback: ${(error as Error).message}`);
