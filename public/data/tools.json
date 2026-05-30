@@ -1,5 +1,42 @@
 [
   {
+    "title": "Image generation",
+    "url": "http://image.jakubantalik.com/",
+    "contentType": "tool",
+    "summary": "Image generation loader and reveal component.",
+    "features": [
+      "Captured page metadata",
+      "Searchable aliases",
+      "Visual preview"
+    ],
+    "tags": [
+      "reference"
+    ],
+    "aliases": [
+      "Image generation",
+      "image.jakubantalik.com",
+      "image",
+      "reference"
+    ],
+    "useCases": [
+      "工具调研",
+      "视觉参考",
+      "项目灵感沉淀"
+    ],
+    "whyInteresting": "Image generation was collected because it appears relevant to reference workflows.",
+    "schemaVersion": 1,
+    "id": "image-generation",
+    "links": [
+      {
+        "label": "image.jakubantalik.com",
+        "url": "http://image.jakubantalik.com/"
+      }
+    ],
+    "previewImage": "/assets/tools/t-co-rbb4bgfzwd/preview.png",
+    "created": "2026-05-30T04:24:38.500Z",
+    "updated": "2026-05-30T04:24:38.500Z"
+  },
+  {
     "title": "CL4R1T4S/ANTHROPIC/Claude-Design-Sys-Prompt.txt at main · elder-plinius/CL4R1T4S · GitHub",
     "url": "https://github.com/elder-plinius/CL4R1T4S/blob/main/ANTHROPIC/Claude-Design-Sys-Prompt.txt",
     "contentType": "tool",
